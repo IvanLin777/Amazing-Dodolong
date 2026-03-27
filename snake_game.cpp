@@ -235,6 +235,14 @@ public:
             enemy.x = rand() % (WIDTH - 2) + 1;
             enemy.y = rand() % (HEIGHT - 2) + 1;
 
+            bool inSafeZone = false;
+            int headX = snake[0].x;
+            int headY = snake[0].y;
+            if (abs(enemy.x - headX) <= 2 && abs(enemy.y - headY) <= 2) {
+                inSafeZone = true;
+            }
+            if (inSafeZone) continue;
+
             bool collision = false;
             for (const auto& s : snake) {
                 if (s.x == enemy.x && s.y == enemy.y) {
