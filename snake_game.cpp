@@ -134,7 +134,7 @@ public:
         nextDirection = RIGHT;
         score = 0;
         evolution = SNAKE;
-        speed = 150000;
+        speed = 20000;
         gameOver = false;
         paused = false;
         invincible = false;
@@ -387,7 +387,7 @@ public:
             enemies = remainingEnemies;
 
             if (score % 3 == 0 && score > 0) {
-                speed = std::max(50000, speed - 3000);
+                speed = std::max(5000, speed - 1000);
             }
 
             snake.push_back(snake.back());
