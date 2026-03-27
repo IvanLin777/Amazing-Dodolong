@@ -116,6 +116,7 @@ private:
     time_t gameStartTime;
     time_t lastObstacleTime;
     time_t lastEnemyTime;
+    time_t lastSnakeMoveTime;
     int enemyCount;
     int obstacleCount;
 
@@ -134,7 +135,7 @@ public:
         nextDirection = RIGHT;
         score = 0;
         evolution = SNAKE;
-        speed = 20000;
+        speed = 150000;
         gameOver = false;
         paused = false;
         invincible = false;
@@ -153,6 +154,7 @@ public:
         time(&gameStartTime);
         lastObstacleTime = gameStartTime;
         lastEnemyTime = gameStartTime;
+        lastSnakeMoveTime = gameStartTime;
 
         spawnFood();
     }
@@ -387,7 +389,7 @@ public:
             enemies = remainingEnemies;
 
             if (score % 3 == 0 && score > 0) {
-                speed = std::max(5000, speed - 1000);
+                speed = std::max(50000, speed - 3000);
             }
 
             snake.push_back(snake.back());
@@ -564,15 +566,19 @@ public:
 
         switch (key) {
             case 'w': case 'W':
+            case 'U':
                 if (direction != DOWN) nextDirection = UP;
                 break;
             case 's': case 'S':
+            case 'D':
                 if (direction != UP) nextDirection = DOWN;
                 break;
             case 'a': case 'A':
+            case 'L':
                 if (direction != RIGHT) nextDirection = LEFT;
                 break;
-            case 'd': case 'D':
+            case 'd':
+            case 'R':
                 if (direction != LEFT) nextDirection = RIGHT;
                 break;
             case 'p': case 'P':
@@ -819,6 +825,8 @@ public:
 
     void gameLoop() {
         initGame();
+        
+        const int RENDER_FPS = 10000; // 100 FPS rendering
 
         while (!gameOver) {
             if (paused) {
@@ -830,21 +838,29 @@ public:
 
             handleInput();
 
-            if (gameOver) break;
-
-            moveSnake();
-            checkCollisions();
-
-            if (gameOver) break;
-
-            if (enemyCount > 0 && !enemyPaused) {
-                moveEnemies();
+            time_t currentTime;
+            time(&currentTime);
+            
+            bool shouldMoveSnake = false;
+            if (currentTime - lastSnakeMoveTime >= 1) {
+                shouldMoveSnake = true;
+                lastSnakeMoveTime = currentTime;
+            }
+            
+            if (shouldMoveSnake) {
+                moveSnake();
                 checkCollisions();
+
+                if (gameOver) break;
+
+                if (enemyCount > 0 && !enemyPaused) {
+                    moveEnemies();
+                    checkCollisions();
+                }
+
+                if (gameOver) break;
             }
 
-            if (gameOver) break;
-
-            time_t currentTime;
             time(&currentTime);
 
             if (currentTime - lastObstacleTime >= 3) {
@@ -863,7 +879,7 @@ public:
             }
 
             drawGame();
-            usleep(speed);
+            usleep(RENDER_FPS);
         }
 
         showGameOver();
