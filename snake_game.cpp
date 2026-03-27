@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <termios.h>
 #include <fcntl.h>
+#include <sys/time.h>
 #include <signal.h>
 
 const std::string HIGHSCORE_FILE = "/home/ntust/Ivan/minigame/highscores.txt";
@@ -92,6 +93,12 @@ int readKey() {
     return -1;
 }
 
+long getCurrentTimeMicros() {
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    return tv.tv_sec * 1000000 + tv.tv_usec;
+}
+
 class SnakeGame {
 private:
     std::vector<Point> snake;
@@ -117,8 +124,10 @@ private:
     time_t lastObstacleTime;
     time_t lastEnemyTime;
     time_t lastSnakeMoveTime;
+    long lastEnemyMoveTime;
     int enemyCount;
     int obstacleCount;
+    static const int ENEMY_MOVE_INTERVAL = 100000; // 0.1秒
 
 public:
     SnakeGame() {
@@ -155,6 +164,7 @@ public:
         lastObstacleTime = gameStartTime;
         lastEnemyTime = gameStartTime;
         lastSnakeMoveTime = gameStartTime;
+        lastEnemyMoveTime = getCurrentTimeMicros();
 
         spawnFood();
     }
@@ -856,13 +866,16 @@ public:
                 checkCollisions();
 
                 if (gameOver) break;
-
+            }
+            
+            long currentTimeMicros = getCurrentTimeMicros();
+            bool shouldMoveEnemy = (currentTimeMicros - lastEnemyMoveTime >= ENEMY_MOVE_INTERVAL);
+            if (shouldMoveEnemy) {
+                lastEnemyMoveTime = currentTimeMicros;
                 if (enemyCount > 0 && !enemyPaused) {
                     moveEnemies();
                     checkCollisions();
                 }
-
-                if (gameOver) break;
             }
 
             time(&currentTime);
