@@ -191,6 +191,16 @@ public:
 
             if (obs.x == WIDTH/2 && obs.y == HEIGHT/2) continue;
 
+            bool inSafeZone = false;
+            if (evolution == SNAKE) {
+                int headX = snake[0].x;
+                int headY = snake[0].y;
+                if (abs(obs.x - headX) <= 4 && abs(obs.y - headY) <= 4) {
+                    inSafeZone = true;
+                }
+            }
+            if (inSafeZone) continue;
+
             bool collision = false;
             for (const auto& s : snake) {
                 if (s.x == obs.x && s.y == obs.y) {
@@ -288,12 +298,12 @@ public:
         Point head = snake[0];
 
         if (evolution < RAYQUAZA || !wallPassReady) {
-            if (head.x <= 0 || head.x >= WIDTH-1 || head.y <= 0 || head.y >= HEIGHT-1) {
+            if (head.x <= 0 || head.x >= WIDTH-1 || head.y <= 0 || head.y >= HEIGHT-2) {
                 if (evolution == RAYQUAZA && wallPassReady) {
                     if (head.x <= 0) snake[0].x = WIDTH - 2;
                     else if (head.x >= WIDTH-1) snake[0].x = 1;
-                    else if (head.y <= 0) snake[0].y = HEIGHT - 2;
-                    else if (head.y >= HEIGHT-1) snake[0].y = 1;
+                    else if (head.y <= 0) snake[0].y = HEIGHT - 3;
+                    else if (head.y >= HEIGHT-2) snake[0].y = 1;
                     wallPassReady = false;
                 } else {
                     gameOver = true;
@@ -303,8 +313,8 @@ public:
         } else {
             if (head.x <= 0) snake[0].x = WIDTH - 2;
             else if (head.x >= WIDTH-1) snake[0].x = 1;
-            else if (head.y <= 0) snake[0].y = HEIGHT - 2;
-            else if (head.y >= HEIGHT-1) snake[0].y = 1;
+            else if (head.y <= 0) snake[0].y = HEIGHT - 3;
+            else if (head.y >= HEIGHT-2) snake[0].y = 1;
         }
 
         for (size_t i = 1; i < snake.size(); i++) {
@@ -519,11 +529,27 @@ public:
         } else if (evolution == RAYQUAZA) {
             hud += " | " + MAGENTA + "SPACE-龍波:" + std::string(dragonDanceReady ? "就緒" : "冷卻") + NC;
             hud += " | " + RED + "Q-暴風:" + std::string(invincible ? "使用中" : "就緒") + NC;
+            hud += " | " + CYAN + "穿牆:" + std::string(wallPassReady ? "就緒" : "冷卻") + NC;
         }
         
         setCursor(2, HEIGHT);
         std::cout << GRAY << "│" << NC << " " << hud;
         for (int x = hud.length() + 3; x < WIDTH-1; x++) std::cout << " ";
+        std::cout << GRAY << "│" << NC << "\n";
+        
+        std::string info = "障礙:" + std::to_string(obstacles.size()) + " 敵人:" + std::to_string(enemies.size());
+        if (enemyPaused) {
+            info += " | " + YELLOW + "敵人暫停中!" + NC;
+        }
+        if (evolution == SNAKE) {
+            info += " | 吃食清9宮";
+        } else if (evolution == DRAGON) {
+            info += " | 穿敵毀障";
+        } else {
+            info += " | 全技能";
+        }
+        std::cout << GRAY << "│" << NC << " " << info;
+        for (int x = info.length() + 3; x < WIDTH-1; x++) std::cout << " ";
         std::cout << GRAY << "│" << NC << "\n";
         
         std::cout << GRAY << "└";
@@ -832,7 +858,7 @@ public:
             }
 
             if (!wallPassReady && evolution == RAYQUAZA) {
-                sleep(5);
+                sleep(3);
                 wallPassReady = true;
             }
 
