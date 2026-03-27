@@ -298,12 +298,12 @@ public:
         Point head = snake[0];
 
         if (evolution < RAYQUAZA || !wallPassReady) {
-            if (head.x < 1 || head.x > WIDTH-2 || head.y < 1 || head.y > HEIGHT-3) {
+            if (head.x < 0 || head.x > WIDTH-1 || head.y < 0 || head.y > HEIGHT-2) {
                 if (evolution == RAYQUAZA && wallPassReady) {
-                    if (head.x < 1) snake[0].x = WIDTH - 2;
-                    else if (head.x > WIDTH-2) snake[0].x = 1;
-                    else if (head.y < 1) snake[0].y = HEIGHT - 3;
-                    else if (head.y > HEIGHT-3) snake[0].y = 1;
+                    if (head.x < 0) snake[0].x = WIDTH - 2;
+                    else if (head.x > WIDTH-1) snake[0].x = 1;
+                    else if (head.y < 0) snake[0].y = HEIGHT - 3;
+                    else if (head.y > HEIGHT-2) snake[0].y = 1;
                     wallPassReady = false;
                 } else {
                     gameOver = true;
@@ -311,10 +311,10 @@ public:
                 }
             }
         } else {
-            if (head.x < 1) snake[0].x = WIDTH - 2;
-            else if (head.x > WIDTH-2) snake[0].x = 1;
-            else if (head.y < 1) snake[0].y = HEIGHT - 3;
-            else if (head.y > HEIGHT-3) snake[0].y = 1;
+            if (head.x < 0) snake[0].x = WIDTH - 2;
+            else if (head.x > WIDTH-1) snake[0].x = 1;
+            else if (head.y < 0) snake[0].y = HEIGHT - 3;
+            else if (head.y > HEIGHT-2) snake[0].y = 1;
         }
 
         for (size_t i = 1; i < snake.size(); i++) {
@@ -450,7 +450,7 @@ public:
         setCursor(1, 1);
 
         std::cout << GRAY << "┌";
-        for (int x = 0; x < WIDTH-1; x++) std::cout << "─";
+        for (int x = 0; x < WIDTH-1; x++) std::cout << "-";
         std::cout << "┐" << NC << "\n";
 
         for (int y = 1; y < HEIGHT-2; y++) {
@@ -462,7 +462,7 @@ public:
         }
 
         std::cout << GRAY << "├";
-        for (int x = 0; x < WIDTH-1; x++) std::cout << "─";
+        for (int x = 0; x < WIDTH-1; x++) std::cout << "-";
         std::cout << "┤" << NC << "\n";
 
         setCursor(food.x, food.y + 1);
@@ -553,7 +553,7 @@ public:
         std::cout << GRAY << "│" << NC << "\n";
         
         std::cout << GRAY << "└";
-        for (int x = 0; x < WIDTH-1; x++) std::cout << "─";
+        for (int x = 0; x < WIDTH-1; x++) std::cout << "-";
         std::cout << "┘" << NC << "\n" << std::flush;
     }
 
