@@ -355,10 +355,6 @@ public:
             if (it->x == snake[0].x && it->y == snake[0].y) {
                 if (invincible) {
                     ++it;
-                } else if (evolution >= DRAGON) {
-                    score += 3;
-                    checkEvolution();
-                    it = enemies.erase(it);
                 } else {
                     gameOver = true;
                     return;
