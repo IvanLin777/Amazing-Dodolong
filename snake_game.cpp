@@ -135,7 +135,7 @@ public:
         nextDirection = RIGHT;
         score = 0;
         evolution = SNAKE;
-        speed = 150000;
+        speed = 80000;
         gameOver = false;
         paused = false;
         invincible = false;
@@ -841,10 +841,14 @@ public:
             time_t currentTime;
             time(&currentTime);
             
-            bool shouldMoveSnake = false;
-            if (currentTime - lastSnakeMoveTime >= 1) {
-                shouldMoveSnake = true;
-                lastSnakeMoveTime = currentTime;
+            static int moveCounter = 0;
+            moveCounter++;
+            int movesPerRender = speed / 10000;
+            if (movesPerRender < 1) movesPerRender = 1;
+            
+            bool shouldMoveSnake = (moveCounter >= movesPerRender);
+            if (shouldMoveSnake) {
+                moveCounter = 0;
             }
             
             if (shouldMoveSnake) {
