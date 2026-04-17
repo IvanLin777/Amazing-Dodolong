@@ -9,6 +9,14 @@
 
 ## 編譯
 
+### 推薦（Linux/macOS 共用）
+
+```bash
+make
+```
+
+### 手動編譯
+
 ```bash
 g++ -std=c++11 -O2 -o snake_game_cpp snake_game.cpp
 ```
@@ -17,6 +25,18 @@ g++ -std=c++11 -O2 -o snake_game_cpp snake_game.cpp
 
 ```bash
 ./snake_game_cpp
+```
+
+也可用：
+
+```bash
+make run
+```
+
+## 清除編譯檔
+
+```bash
+make clean
 ```
 
 ## 控制
