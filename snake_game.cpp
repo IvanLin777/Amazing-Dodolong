@@ -11,8 +11,30 @@
 #include <fcntl.h>
 #include <sys/time.h>
 #include <signal.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <cerrno>
 
-const std::string HIGHSCORE_FILE = "/home/ntust/Ivan/minigame/highscores.txt";
+std::string getHighScorePath() {
+    const char* envPath = getenv("SNAKE_HIGHSCORE_FILE");
+    if (envPath && envPath[0] != '\0') {
+        return std::string(envPath);
+    }
+
+    const char* home = getenv("HOME");
+    if (!home || home[0] == '\0') {
+        return "./highscores.txt";
+    }
+
+    std::string dir = std::string(home) + "/.snake_evolution";
+    if (mkdir(dir.c_str(), 0755) != 0 && errno != EEXIST) {
+        return "./highscores.txt";
+    }
+
+    return dir + "/highscores.txt";
+}
+
+const std::string HIGHSCORE_FILE = getHighScorePath();
 
 struct Point {
     int x, y;
@@ -81,7 +103,7 @@ int readKey() {
     int n = read(stdinFd, buf, sizeof(buf));
     if (n > 0) {
         if (buf[0] == 27 && n >= 3) {
-            if (buf[1] == 91) {
+            if (buf[1] == 91 || buf[1] == 79) {
                 if (buf[2] == 'A') return 'U';
                 if (buf[2] == 'B') return 'D';
                 if (buf[2] == 'C') return 'R';
