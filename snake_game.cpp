@@ -82,6 +82,7 @@ void disableRawMode() {
 }
 
 void cleanup(int sig) {
+    (void)sig;
     resetScreen();
     disableRawMode();
     exit(0);
